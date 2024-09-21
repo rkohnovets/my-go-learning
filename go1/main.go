@@ -13,10 +13,12 @@ import (
 func main() {
 	consoleLogger := log.New(os.Stdout, "console log", log.Ldate|log.Ltime)
 
-	handler1 := handlers.NewHandler1(consoleLogger)
+	firstHandler := handlers.NewFirst(consoleLogger)
+	productsHandler := handlers.NewProducts(consoleLogger)
 
 	serveMux := http.NewServeMux()
-	serveMux.Handle("/1", handler1)
+	serveMux.Handle("/first", firstHandler)
+	serveMux.Handle("/products", productsHandler)
 
 	s := &http.Server{
 		Addr:         ":8080",
