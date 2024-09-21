@@ -43,8 +43,15 @@ func GetProducts() Products {
 	return testProductList
 }
 
+func AddProduct(p *Product) int {
+	newId := len(testProductList) + 1
+	p.ID = newId
+	testProductList = append(testProductList, p)
+	return newId
+}
+
 var testProductList = []*Product{
-	&Product{
+	{
 		ID:          1,
 		Name:        "Latte",
 		Description: "Frothy milky coffee",
@@ -53,7 +60,7 @@ var testProductList = []*Product{
 		CreatedOn:   time.Now().UTC().String(),
 		UpdatedOn:   time.Now().UTC().String(),
 	},
-	&Product{
+	{
 		ID:          2,
 		Name:        "Espresso",
 		Description: "Short and strong coffee without milk",

@@ -32,7 +32,7 @@ func (handler *Products) ServeHTTP(writer http.ResponseWriter, request *http.Req
 	)
 }
 
-func (handler *Products) getTestProductsList(writer http.ResponseWriter, request *http.Request) {
+func (handler *Products) getTestProductsList(writer http.ResponseWriter, _ *http.Request) {
 	productsList := data.GetProducts()
 	err := productsList.ToJSON(writer)
 	if err != nil {
@@ -67,7 +67,6 @@ func (handler *Products) addProduct(writer http.ResponseWriter, request *http.Re
 		return
 	}
 
-	// TODO: adding product to some storage logic
-	handler.logger.Printf("Adding Product %#v", product)
-	// ...
+	data.AddProduct(&product)
+	handler.logger.Printf("Added Product: %#v", product)
 }
