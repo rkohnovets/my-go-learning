@@ -2,6 +2,7 @@ package data
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"time"
 )
@@ -17,7 +18,7 @@ type Product struct {
 	DeletedOn   string  `json:"-"`
 }
 
-type Products []*Product
+type Products []Product
 
 func (p *Products) ToJSON(w io.Writer) error {
 	e := json.NewEncoder(w)
@@ -40,17 +41,74 @@ func (p *Products) FromJSON(r io.Reader) error {
 }
 
 func GetProducts() Products {
-	return testProductList
+	cnt := 0
+	for _, p := range testProductList {
+		if p.DeletedOn == "" {
+			cnt++
+		}
+	}
+
+	result := make(Products, cnt)
+	i := 0
+	for _, p := range testProductList {
+		if p.DeletedOn == "" {
+			result[i] = p
+			i++
+		}
+	}
+	return result
 }
 
 func AddProduct(p *Product) int {
 	newId := len(testProductList) + 1
 	p.ID = newId
-	testProductList = append(testProductList, p)
+	p.CreatedOn = time.Now().UTC().String()
+	p.UpdatedOn = time.Now().UTC().String()
+	p.DeletedOn = ""
+	testProductList = append(testProductList, *p)
 	return newId
 }
 
-var testProductList = []*Product{
+var ErrorNotFoundProduct = fmt.Errorf("product not found")
+
+func GetProductById(id int) (Product, error) {
+	for _, product := range testProductList {
+		if product.ID == id && product.DeletedOn == "" {
+			return product, nil
+		}
+	}
+	return Product{}, ErrorNotFoundProduct
+}
+
+func UpdateProduct(p Product) error {
+	for index, product := range testProductList {
+		if product.ID == p.ID && product.DeletedOn == "" {
+			p.CreatedOn = product.CreatedOn
+			p.UpdatedOn = time.Now().UTC().String()
+			p.DeletedOn = ""
+			testProductList[index] = p
+			return nil
+		}
+	}
+	return ErrorNotFoundProduct
+}
+
+func UpdateProductById(id int, p Product) error {
+	p.ID = id
+	return UpdateProduct(p)
+}
+
+func DeleteProductById(id int) error {
+	for index, product := range testProductList {
+		if product.ID == id && product.DeletedOn == "" {
+			testProductList[index].DeletedOn = time.Now().UTC().String()
+			return nil
+		}
+	}
+	return ErrorNotFoundProduct
+}
+
+var testProductList = []Product{
 	{
 		ID:          1,
 		Name:        "Latte",

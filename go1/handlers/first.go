@@ -22,9 +22,9 @@ func (handler *First) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	handler.logger.Println("'First' handler called, data received:", string(data))
+	handler.logger.Printf("'First' handler called, data received: \"%s\"", string(data))
 
-	responseString := "hello from 'First' handler"
+	responseString := "hello"
 	n, err := io.WriteString(w, responseString)
 	if err != nil {
 		handler.logger.Println("Error in 'First' handler:", err)
